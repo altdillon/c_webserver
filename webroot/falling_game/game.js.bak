@@ -1,0 +1,215 @@
+(function(w,d){
+
+    var game = {}; // object for game stuff 
+
+    // create an instance of the canvas and other useful objects
+    const canvas = d.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.height = Math.floor(w.innerHeight/2);
+    canvas.width = Math.floor(w.innerWidth/2);
+    game.lastTime = Date.now();
+    game.entities = {}; // object for all the stuff currnetly on the screen
+    game.frameCount = 0;
+    game.startTime = Date.now();
+
+    var Input = function(){
+        this.keyPressCount = 0;
+        this.lastKey = null; // bad I know...
+        this.keyStatus = []; // array to store which key was pressed last 
+        this.hi = "hello!";
+    }
+
+    Input.prototype.initKeys = function(){
+        var inputThis = this;
+
+        function lastKey(event,status){
+            inputThis.keyPressCount ++;
+            inputThis.lastKey = event.key;
+
+            inputThis.keyStatus[event.key] = status;          
+
+        }
+
+        d.addEventListener('keydown',function(e){
+            lastKey(e,true);
+        });
+
+        d.addEventListener('keyup',function(e){
+            lastKey(e,false);
+        });
+    }
+
+    // object for the player 
+    var Player = function(){
+        this.ds = 40;
+        this.posX = 100;
+        this.posY = 100;
+    }
+
+
+    Player.prototype.drawPlayer = function(){
+        ctx.fillRect(this.posX,this.posY,10,10);
+    }
+    
+
+
+    game.update = function(dt){
+        if(game._input.keyStatus['d'])
+        {
+            game._player.posX = game._player.posX + game._player.ds*dt;    
+        }
+        if(game._input.keyStatus['a'])
+        {
+            game._player.posX = game._player.posX - game._player.ds*dt;
+        }
+        if(game._input.keyStatus['w'])
+        {
+            game._player.posY = game._player.posY - game._player.ds*dt;
+        }
+        if(game._input.keyStatus['s'])
+        {
+            game._player.posY = game._player.posY + game._player.ds*dt;
+        }
+    }
+
+
+
+        
+//////////////////////////////////////////////////////////////////////////
+    // object for handling the loading of files
+    var Loader = function() {
+        this.imgCache = [];
+        this.loading = [];
+        //this.readyCallBacks = []; // may not needed
+        this.imgLoaded = []; // false until image is loaded
+        this.readCallbacks = []; // callbacks for when everything is loaded
+    }
+
+		// returns true if all images have finished loading.
+		Loader.prototype.allLoaded = function(){
+			var allLoaded = true;
+
+      for(var k in this.imgCache){
+        if(this.imgCache.hasOwnProperty(k) && !this.imgCache[k]){
+          allLoaded = false;
+        }
+      }
+			return allLoaded;
+		}
+
+    Loader.prototype.load = function(uriOrArr) {
+        var loaderThis = this;
+        if(uriOrArr instanceof Array) {
+					uriOrArr.forEach(function(elem){
+						loaderThis.loadFile(elem);
+					});    
+        } else {
+					  this.loadFile(uriOrArr);
+        }
+    }
+
+    Loader.prototype.loadFile = function(fileName,loadCallback) {
+        loaderThis = this; // ref to the object in qestion
+        
+        if(this.imgCache[fileName]){ // if we already have the image loaded
+            return this.imgCache[fileName];
+        } else {
+            var bufferImg = new Image(); // buffer image...
+            bufferImg.onload = function() {
+                loaderThis.imgCache[fileName] = bufferImg;
+                loaderThis.imgLoaded[fileName] = true;     
+                // check to see if everything else is finished downloading.  
+                // if it is then call the test of the callbacks
+                if(loaderThis.allLoaded()){
+                  //debugger;
+                }
+            }
+            loaderThis.imgLoaded[fileName] = false; // set a false flag in the image loaded array   
+            bufferImg.src = fileName;
+        }
+    }
+
+    // factory function in loader for making sprites.  
+    Loader.prototype.getSprites = function(){
+      // right now just use the constents for the dt sprite sheet
+      var SheetWidth = 1536;
+      var SheetHeight = 1024;
+      var SpriteWidth = 256;
+      var SpriteHeight = 256;
+      var AnimationFrames = 6;
+      var AngularViews = 4;
+      // create an array and and the sprites to it
+      var sprites = [];
+      this.imgCache.forEach(function(imgElem){
+        var newSprite = new Sprite(SheetWidth,SheetHeight,SpriteWidth,SpriteHeight,10,4,imgElem);
+        sprites.push(newSprite);
+      });
+
+      return sprites;
+    }
+
+    Loader.prototype.onReady = function(cbFunct){
+      this.readyCallbacks.push(cbFunct);
+    }
+
+/////////////////////////////
+    // object for handling sprite sheets
+    // this is kinda complex, but one of the cooler parts of this program
+    var Sprite = function(sheetWidth,sheedHight,keyWidth,keyHeight,keys,views,sheetImg){
+      this.sheetWidth = sheetWidth; // width of the sprite sheet
+      this.sheetHeight = sheetHeight; // height of the sprite sheet
+      // height and width of indivual sprites 
+      this.keyWidth = keyWidth; 
+      this.keyHight = keyHeight;
+      this.keys = keys; // number of keys in each frame
+      this.views = views; // number of views that the sprite can have 
+      this._index = 0; // internal index for which frame is being shown
+    }
+
+    Sprite.prototype.render = function(dt){
+      
+    }
+
+    // simple function for rendering a single key of the sprite sheet 
+    // also sort of used to figure out how canvas renders images
+    Sprite.prototype.renderKey = function(posX,posY,keyFrame){
+      
+    } 
+
+
+    // main function
+    game.main = function(){
+        //fps = game.frameCount / ( (Date.now() - game.startTime)/1000);
+        ctx.clearRect(0,0,canvas.width,canvas.height); // clear the screen for the new frame
+        var dt = (Date.now() - game.lastTime)/1000.0;
+        // draw the FPS
+        //ctx.font = '40px serif';
+        //ctx.fillText('fps: '+fps, 10, 50);
+        game._player.drawPlayer();
+        game.update(dt);
+        w.requestAnimationFrame(game.main);
+        game.lastTime = Date.now();
+        game.frameCount += 1;
+    }
+
+    // start up game objects
+    game._input = new Input();
+    game._player = new Player(); 
+    game._loader = new Loader();
+    // attach a call to the input object 
+   //debugger;
+    w.onload = function(){
+        game._input.initKeys();
+        game._loader.load(['./sprites/trump_iddle.png',
+                           './sprites/trump_run.png',
+                           './sprites/trump_walk.png'
+                          ]);
+        game.entities = game._loader.getSprites(); // factory method for returning a list of sprites
+        
+        game.main();                
+    }
+
+    
+   
+
+})(window,document);
