@@ -49,10 +49,13 @@ void add(const char *msg,char *res,char **args,int len)
 {
   if(len == 2)
   {
-    int a = atoi(strrchr(args[0],"="));
-    int b = atoi(strrchr(args[1],"="));
+    char *st_a = strstr(args[0],"=");
+    char *st_b = strstr(args[1],"=");
+    int a = atoi(strstr(st_a,"=")+1);
+    int b = atoi(strstr(st_b,"=")+1);
     int c = a + b;
-    printf("a+b= %d\n",c);
+    //printf("[TEST ~LINE 57]a+b= %d\n",c);
+    sprintf(res,"%d + %d = %d",a,b,c);
     //sprintf(res,"%d",c);
   }
 }

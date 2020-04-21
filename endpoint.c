@@ -124,10 +124,11 @@ int runEndPoint(char *request)
   int argCount = getArgs(arg_str,argList);
 
   // just assume that the path exists, but check the names to be safe
+  // this whole thing is gonzo 
   int endPointIndex = findEndPoint(endpoint_str);
   if(endPointIndex > 0) // just to be safe
   {
-    (*endpointList[endPointIndex].endpoint)(request,argList,responceBuffer,argCount);
+    (*endpointList[endPointIndex].endpoint)(request,responceBuffer,argList,argCount); 
     s = 0;
   }
 
