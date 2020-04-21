@@ -1,1 +1,2 @@
 # c_webserver 
+This is a simple webserver/ framework that I wrote in C durring the 2020 CV 19 pandemic.  I wrote it for theree reasons.  First was to simply do a project in C.  Second, to build a platform while totally not understanding what I was doing in order to have something to write memory exploits for in the future.  And Finally to have a simple C based web framework that I can use as a quick and dirty webserver for projects running on a local network.  
