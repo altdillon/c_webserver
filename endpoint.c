@@ -72,6 +72,7 @@ int countArgs(char *args)
   return count;
 }
 
+// count the number of arguments
 int getArgs(char *argstr,char **args)
 {
   int argc = 0; // count of tokens  
@@ -126,7 +127,7 @@ int runEndPoint(char *request,char *responce)
   // just assume that the path exists, but check the names to be safe
   // this whole thing is gonzo 
   int endPointIndex = findEndPoint(endpoint_str);
-  if(endPointIndex > 0) // just to be safe
+  if(endPointIndex >= 0) // just to be safe, rember that zero is also a valid answer
   {
     (*endpointList[endPointIndex].endpoint)(request,responceBuffer,argList,argCount); 
     s = 0;
