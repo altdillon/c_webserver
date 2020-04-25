@@ -23,7 +23,7 @@ typedef struct
 endpoint_t endpointList[LISTSIZE];
 
 int addEndPoint(void (*fun_ptr)(const char *,char *,char **,int),const char *path);
-int runEndPoint(char *request); // run and endpoit
+int runEndPoint(char *request,char *responce); // run and endpoit
 int getArgs(char *argstr,char **args);
 int countArgs(char *args); // returns the number of args
 int findEndPoint(char *endpoint); // do a linear search and return the index of an endpoint, -1 if not found

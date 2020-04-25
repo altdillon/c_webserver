@@ -13,13 +13,17 @@
 void demoOnClick(const char *rec,char *res,char **args,int len);
 void onMessage(const char *msg,char *res,char **args,int len);
 void add(const char *msg,char *res,char **args,int len);
+void ledstate(const char *rec,char *res,char **args,int len);
+
+bool ledvalue;
 
 int main()
 {
-
+    ledvalue = false;
     addEndPoint(&demoOnClick,"/onClick");
     addEndPoint(&onMessage,"/message");
     addEndPoint(&add,"/add");
+    addEndPoint(&ledstate,"/ledstate");
 
     running = true;
     signal(SIGINT, handle_sigint); 
@@ -34,15 +38,43 @@ int main()
     return 0;
 }
 
+void ledstate(const char *rec,char *res,char **args,int len)
+{
+  if(len == 1)
+  {
+    char *mcd = strstr(args[0],"=")+1;
+    if(strcmp(mcd,"on")==0)
+    {
+      ledvalue = true;
+    }
+    else if(strcmp(mcd,"off")==0)
+    {
+      ledvalue = false;
+    }
+  }
+  else if(len == 0)
+  {
+    if(ledvalue == true)
+    {
+      strcpy(res,"led on");
+    }
+    else
+    {
+      strcpy(res,"led off");
+    }
+  }
+}
+
 void demoOnClick(const char *rec,char *res,char **args,int len)
 {
-  printf("%s\n",rec);
+  strcpy(res,"hello there!");
 }
 
 void onMessage(const char *msg,char *res,char **args,int len)
 {
-  printf("got %d arguments\n",len);
-  printf("message from on message: %s\n",msg);
+  char *st_a = strstr(args[0],"=");
+  st_a += 1;
+  sprintf(res,"hello %s ",st_a);
 }
 
 void add(const char *msg,char *res,char **args,int len)
@@ -55,7 +87,7 @@ void add(const char *msg,char *res,char **args,int len)
     int b = atoi(strstr(st_b,"=")+1);
     int c = a + b;
     //printf("[TEST ~LINE 57]a+b= %d\n",c);
-    sprintf(res,"%d + %d = %d",a,b,c);
+    sprintf(res,"%d + %d = %d ",a,b,c);
     //sprintf(res,"%d",c);
   }
 }

@@ -203,9 +203,11 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr)
       }
       else if(hasEndPoint(ptr)) // see if the requested path is a rest endpoint, ptr has the actual body of request with out the webroot dir
       {
+        char responce[MAXRESSIZE];
         printf("[STATUS] endpoint \" %s \" requested \n",ptr);
-        runEndPoint(ptr);
+        runEndPoint(ptr,responce);
         send200(sockfd);
+        send(sockfd,responce,strlen(responce),0); // this is more of an exspriment
       }
       else // file not found, send 404
       {

@@ -49,7 +49,7 @@ bool hasEndPoint(char *path)
     }
   }
 */
-  if(findEndPoint(endpoint_str) > 0)
+  if(findEndPoint(endpoint_str) >= 0)
   {
     hasPoint = true;
   }
@@ -86,7 +86,7 @@ int getArgs(char *argstr,char **args)
   return argc;
 }
 
-int runEndPoint(char *request)
+int runEndPoint(char *request,char *responce)
 {
   int s = 0; // value for sucess
   // define the name of the endpoint
@@ -139,6 +139,7 @@ int runEndPoint(char *request)
     free(argList[j]);
   } 
   
+  strcpy(responce,responceBuffer); // copy the final value for the output over
   return s; 
 }
 
