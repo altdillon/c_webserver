@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -6,6 +7,8 @@
 #include "main.h"
 #include "webpage.h"
 #include "endpoint.h"
+#include "severconfig.h"
+#ifdef DEFULT_MAIN
 //#include "debug.h"
 
 // test main for the demo app
@@ -121,5 +124,5 @@ void *ec_malloc(unsigned int size)
       fatal("in ec_malloc() on memory allocation");
    return ptr;
 }
-
+#endif
 

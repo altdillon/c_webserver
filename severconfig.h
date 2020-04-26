@@ -1,8 +1,11 @@
 #ifndef SERVERCONFIG_H
 #define SERVERCONFIG_H
-#define VERSION 0.79
+#define VERSION 0.9
 #define PORT 8080
+#ifndef WEBROOT
 #define WEBROOT "./webroot"
+#endif
+//#define DEFULT_MAIN
 
 // macros for handling signals
 #define SIGHUP  1   /* Hangup the process */ 
