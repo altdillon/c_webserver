@@ -5,7 +5,7 @@
 #ifndef WEBROOT
 #define WEBROOT "./webroot"
 #endif
-//#define DEFULT_MAIN
+#define DEFULT_MAIN
 
 // macros for handling signals
 #define SIGHUP  1   /* Hangup the process */ 
