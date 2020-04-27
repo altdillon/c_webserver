@@ -68,9 +68,7 @@
       ledOff();
     }
 
-    setTimeout(function(){ 
-       getSwitch();
-    }, 100);
+    window.setInterval(getSwitch,100)
 
   }
 
