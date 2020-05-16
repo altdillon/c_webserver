@@ -1,11 +1,11 @@
 #ifndef SERVERCONFIG_H
 #define SERVERCONFIG_H
-#define VERSION 0.9
+#define VERSION 0.98
 #define PORT 8080
 #ifndef WEBROOT
 #define WEBROOT "./webroot"
 #endif
-//#define DEFULT_MAIN
+#define DEFULT_MAIN
 
 // macros for handling signals
 #define SIGHUP  1   /* Hangup the process */ 
@@ -19,5 +19,8 @@
 #define DEBUG
 // enable multiprocess
 //#define MULTIPROC
+// define a path for the log file
+#define LOGPATH "/tmp/wslog.txt" 
+#define SAVELOGFILE
 
 #endif

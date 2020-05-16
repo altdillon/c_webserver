@@ -59,21 +59,28 @@ void runServerLoop()
   int sockfd, new_sockfd, yes=1;
   struct sockaddr_in host_addr, client_addr; // local address information
   socklen_t sin_size;
-  
-  // do some stuff to init the web server
+  char messages[80]; // string for messages  
 
-  printf("[STATUS] starting socket on port: %d \n",PORT);
+  // do some stuff to init the web server
+  //printf("[STATUS] starting socket on port: %d \n",PORT);
+  sprintf(messages,"[STATUS] starting socket on port: %d \n",PORT);
+  logmsg(messages);
+
   // attempt to setup a new socket and see if it failed
   sockfd = socket(PF_INET,SOCK_STREAM,0);
   if(sockfd == -1)
   {
-    printf("[ERROR] failed to creat socket errorcode: %d\n",sockfd);
+    //printf("[ERROR] failed to creat socket errorcode: %d\n",sockfd);
+    sprintf(messages,"[ERROR] failed to creat socket errorcode: %d\n",sockfd);
+    logmsg(messages);
   }
   
   // set the socket options, tell the user if that failed
   if(setsockopt(sockfd,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof(int)) == -1)
   {
-    printf("[ERROR] failed to set socket option SO_REUSEADDR\n");
+    //printf("[ERROR] failed to set socket option SO_REUSEADDR\n");
+    sprintf(messages,"[ERROR] failed to set socket option SO_REUSEADDR\n");
+    logmsg(messages);
   }
   
   // set some more options
@@ -85,16 +92,20 @@ void runServerLoop()
   // bind to the host ip address and start listening
   if (bind(sockfd, (struct sockaddr *)&host_addr, sizeof(struct sockaddr)) == -1)
   {
-    printf("[ERROR] failed to bind socket to port \n");
+    //printf("[ERROR] failed to bind socket to port \n");
+    sprintf(messages,"[ERROR] failed to bind socket to port \n");
+    logmsg(messages);
   }
 
   if(listen(sockfd,20) == -1)
   {
-    printf("[ERROR] failed to start listening on socket");
+    //printf("[ERROR] failed to start listening on socket");
+    logmsg("[ERROR] failed to start listening on socket");
   }
   else
   {
-    printf("[STATUS] now waiting for connections...\n");
+    //printf("[STATUS] now waiting for connections...\n");
+    logmsg("[STATUS] now waiting for connections...\n");
   }
   
   // main loop of the server
@@ -106,46 +117,55 @@ void runServerLoop()
     
     if(new_sockfd == -1)
     {
-      printf("[ERROR] failed to accpet incoming socket\n");
+      //printf("[ERROR] failed to accpet incoming socket\n");
+      logmsg("[ERROR] failed to accpet incoming socket\n");
     }
     else // handle new socket
     {
-      printf("[STATUS] new connection received\n");
-      // sprin off a new process to handle 
+      //printf("[STATUS] new connection received\n");
+      logmsg("[ERROR] failed to accpet incoming socket\n");
+      // if enabled then spin off a new process to handle 
       #ifdef MULTIPROC
-      printf("[STATUS] starting a new process to handle connection from parrent process: %d \n",getpid());
+      //printf("[STATUS] starting a new process to handle connection from parrent process: %d \n",getpid());
+      sprintf(message,"[STATUS] starting a new process to handle connection from parrent process: %d \n",getpid()); 
       pid_t pid = fork();
       if(pid == 0) // child process
       {
-        printf("[STATUS] child process running with pid: %d \n",getpid());
+        //printf("[STATUS] child process running with pid: %d \n",getpid());
+        sprintf(message,"[STATUS] starting a new process to handle connection from parrent process: %d \n",getpid());
+        logmsg(message);
         handle_connection(new_sockfd,&client_addr);
         exit(0); // once the request has been hand
       }
       #else
       handle_connection(new_sockfd,&client_addr);
       #endif
-      printf("[STATUS] shutting down client socket \n");
-      
+      //printf("[STATUS] shutting down client socket \n");
+      logmsg("[STATUS] shutting down client socket \n");  
     }
   }
 
-  printf("[STATUS] server terminated, now clearning up...\n");
+  //printf("[STATUS] server terminated, now clearning up...\n");
+  logmsg("[STATUS] server terminated, now clearning up...\n");
   close(sockfd); // close out the server socket
 }
 
 void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr)
 {
-  unsigned char *ptr,request[500],resource[500];
+  unsigned char *ptr,request[500],resource[500],messages[80];
   int fd,length;
 
   length = recv_line(sockfd,request);
-  printf("[STATUS] Got request from %s:%d \"%s\" \n", inet_ntoa(client_addr_ptr->sin_addr), ntohs(client_addr_ptr->sin_port), request);
+  //printf("[STATUS] Got request from %s:%d \"%s\" \n", inet_ntoa(client_addr_ptr->sin_addr), ntohs(client_addr_ptr->sin_port), request);
+  sprintf(messages,"[STATUS] Got request from %s:%d \"%s\" \n", inet_ntoa(client_addr_ptr->sin_addr), ntohs(client_addr_ptr->sin_port), request);
+  logmsg(messages);
 
   ptr = strstr(request," HTTP/");
   if(ptr == NULL)
   {
     close(sockfd);
-    printf("[ERROR] Not valid HTTP\n");
+    //printf("[ERROR] Not valid HTTP\n");
+    logmsg("[ERROR] Not valid HTTP\n");
   }
   else // if there's a valid HTTP reqest
   {
@@ -160,8 +180,11 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr)
     if(strncmp(request, "GET ", 4) == 0)
     {
       ptr = request + 4; // ptr is the URL
-      printf("[STATUS] received HTTP GET request \n");
-      printf("[INFO] request: %s, with size %d \n",ptr,strlen(ptr)); // print out the contencts of the request
+      //printf("[STATUS] received HTTP GET request \n");
+      //printf("[INFO] request: %s, with size %d \n",ptr,strlen(ptr)); // print out the contencts of the request
+      logmsg("[STATUS] received HTTP GET request \n");
+      sprintf(messages,"[INFO] request: %s, with size %d \n",ptr,strlen(ptr));
+      logmsg(messages);
 
       // respond to the get request 
       //send_string(sockfd, "HTTP/1.0 200 OK\r\n");
@@ -170,7 +193,8 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr)
 
       if(strcmp(ptr,"/") == 0)
       {
-        printf("[STATUS] index.html reqested\n");
+        //printf("[STATUS] index.html reqested\n");
+        logmsg("[STATUS] index.html reqested\n");
         //send200(sockfd);
         //if(sendFile(sockfd,"./webroot/index.html") < 0)
         //{
@@ -190,30 +214,32 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr)
       {
         // if exisits then send the file over
         send200(sockfd);
-        printf("[INFO] sending file: \"%s\" \n",path); 
+        sprintf(messages,"[INFO] sending file: \"%s\" \n",path);
+        logmsg(messages); 
         if(sendFile(sockfd,path) < 0)
         {
-          printf("[ERROR] failed to send resource: \"%s\" to client \n",path);
+          sprintf(messages,"[ERROR] failed to send resource: \"%s\" to client \n",path);
+          logmsg(messages);
           // try to generate some more information for error tracking
           if(fileTooLarge(path))
           {
-            printf("[ERROR] file is too large\n");
+            logmsg("[ERROR] file is too large\n");
           }
         }
       }
       else if(hasEndPoint(ptr)) // see if the requested path is a rest endpoint, ptr has the actual body of request with out the webroot dir
       {
         char responce[MAXRESSIZE];
-        printf("[STATUS] endpoint \" %s \" requested \n",ptr);
+        sprintf(messages,"[STATUS] endpoint \" %s \" requested \n",ptr);
         runEndPoint(ptr,responce);
         send200(sockfd);
         send(sockfd,responce,strlen(responce),0); // this is more of an exspriment
       }
       else // file not found, send 404
       {
-        printf("[STATUS] file not found, sending 404 error \n");
+        logmsg("[STATUS] file not found, sending 404 error \n");
         send404(sockfd);
-        char *errorPage = "<title> 404 not found </title> <h1> 404 Page not found! </h1>";
+        char *errorPage = "<title> 404 not found </title> <h1> 404 Page not found! </h1>"; // litterly all the html for the 404 page
         send(sockfd, errorPage,strlen(errorPage), 0);       
       }
     }
@@ -221,19 +247,19 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr)
     if(strncmp(request,"POST ",5) == 0)
     {
       ptr = request + 5;
-      printf("[STATUS] received HTTP POST request \n");
+      logmsg("[STATUS] received HTTP POST request \n");
     }
     // head reqest
     if(strncmp(request,"HEAD ",5) == 0)
     {
-      printf("[STATUS] got a HTTP head reqest \n");
+      logmsg("[STATUS] got a HTTP head reqest \n");
       // how to handle the post reqest 
       ptr = request + 5; // ptr is the URL
     }
     // print out the reqest uri
     //printf("[DEBUG] request uri is: \"%s\" \n",ptr);
 
-    printf("[INFO] closing client socket \n");
+    logmsg("[INFO] closing client socket \n");
     shutdown(sockfd, SHUT_RDWR); 
   }
 }
@@ -266,7 +292,7 @@ int cutStr(char *str)
 
 void stopServer()
 {
-  printf("[INFO] Stopping server...\n");
+  logmsg("[INFO] Stopping server...\n");
   running = false;
 }
 

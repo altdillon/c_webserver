@@ -14,6 +14,7 @@
 #include <signal.h>
 #include "severconfig.h"
 #include "endpoint.h"
+#include "datalogging.h"
 
 // structs from hacking-network.h ...
 /* Structure for Ethernet headers */
