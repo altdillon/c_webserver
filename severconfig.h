@@ -20,7 +20,7 @@
 // enable multiprocess
 //#define MULTIPROC
 // define a path for the log file
-#define LOGPATH "/tmp/wslog.txt" 
+#define LOGPATH "/tmp/ws.log" 
 #define SAVELOGFILE
 
 #endif
