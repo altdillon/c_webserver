@@ -48,6 +48,73 @@ int recv_line(int sockfd, unsigned char *dest_buffer)
    return 0; // didn't find the end of line characters
 }
 
+
+/*
+*
+*   Run the server in a loop
+*   ...But in a server
+*
+*/
+
+void runDeamonServerLoop()
+{
+  //running = true; // running
+  serverRunning = 1;
+  int sockfd, new_sockfd, yes=1;
+  struct sockaddr_in host_addr, client_addr; // local address information
+  socklen_t sin_size;
+  char messages[80]; // string for messages  
+
+  // start the webserver as a deamon
+  pid_t pid,sid;
+  // start a new process and make sure it works
+  pid = fork();
+  if(pid < 0)
+  {
+    logmsg("[ERROR] failed to start deamon process\n");
+    exit(1);
+  }
+
+  // kill the parrent process and disconnect from the terminal
+  if(pid > 0)
+  {
+    exit(0);
+  }
+
+  umask(0); // set umask to zero
+  // get a new session from the os for the child pid
+  sid = setsid();
+  if(sid < 0)
+  {
+    logmsg("[ERROR] failed to set child pid\n");
+    exit(3);
+  }
+  // change to current directory
+  //if(chdir("/") < 0){
+  //  logmsg("[ERROR] failed to change directory\n");
+  //  exit(4);
+  //}
+  
+  // close the standeard descripters 
+  close(STDIN_FILENO); // No more listening.
+  close(STDOUT_FILENO); // No more talking.
+  close(STDERR_FILENO); // No more failing (or so...)   
+
+  // log that we've started the web server...
+  sprintf(messages,"[STATUS] server deamon started with pid status: %d and process status id: %d\n",pid,sid);
+  logmsg(messages);
+
+  // setup the web server
+  sprintf(messages,"[INFO] starting socket on port: %d \n",PORT);
+  logmsg(messages);
+
+ // OK! Now we do something kind of fishy... Now that the server if effectivly running as a deamon we can just start start the server as we normally would
+  logmsg("[INFO] now starting webserver like normal... \n");
+  runServerLoop();
+
+}
+
+
 /*
 *   Run the server in a loop 
 */

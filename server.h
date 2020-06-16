@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <signal.h>
+#include <errno.h>
 #include "severconfig.h"
 #include "endpoint.h"
 #include "datalogging.h"
@@ -72,6 +73,7 @@ int recv_line(int sockfd, unsigned char *dest_buffer);
 
 // functions for running the server
 void runServerLoop();             // just run the server loop
+void runDeamonServerLoop();       // run the server loop in a deamon
 void handle_sigint(int sig);      // ^C that bitch
 void stopServer();
 void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr);

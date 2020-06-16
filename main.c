@@ -36,8 +36,9 @@ int main()
     #ifdef MULTIPROC
     printf("MULTIPROCESS ENABLED IN THIS BUILD \n");
     #endif
-    runServerLoop(); // start up a server loop
-    
+    //runServerLoop(); // start up a server loop
+    runDeamonServerLoop();    
+
     return 0;
 }
 
