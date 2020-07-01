@@ -1,6 +1,6 @@
 #ifndef SERVERCONFIG_H
 #define SERVERCONFIG_H
-#define VERSION 0.98
+#define VERSION 1.1
 #define PORT 8080
 #ifndef WEBROOT
 #define WEBROOT "./webroot"
@@ -20,7 +20,7 @@
 // enable multiprocess
 //#define MULTIPROC
 // define a path for the log file
-#define LOGPATH "/tmp/ws.log" 
+#define LOGPATH "/tmp/webserver.log" 
 #define SAVELOGFILE
 
 #endif

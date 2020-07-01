@@ -65,6 +65,14 @@ void runDeamonServerLoop()
   socklen_t sin_size;
   char messages[80]; // string for messages  
 
+  #ifdef SAVELOGFILE
+  // make sure to init the log file
+  if(initFile(LOGPATH) == -1)
+  {
+    printf("%s\n","failed to start log file"); // no point to starting log file until
+  }
+  #endif
+
   // start the webserver as a deamon
   pid_t pid,sid;
   // start a new process and make sure it works

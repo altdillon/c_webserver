@@ -20,7 +20,7 @@ bool fileExists(const char *path);            // return true if the file exists
 void initLogArray();                          // allocate memory for the log data array
 void clearArray();                            // clear all the data
 void makeHeaderString(char *logheadr);        // generate a header string
-void initFile(const char *path);              // make an empty header file
+int initFile(const char *path);              // make an empty header file and delete the old one if it exsists
 void initLogging();                           // make an empty log file
 
 #endif

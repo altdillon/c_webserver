@@ -4,10 +4,13 @@
 
 #ifndef WEBSERVICE_H
 #define WEBSERVICE_H
-//#include "main.h"
+#include "./datalogging.h"
+#include "./debug.h"
+#include "./endpoint.h"
+#include "./main.h"
+#include "./networkutil.h"
 #include "./server.h"
 #include "./severconfig.h"
 #include "./webpage.h"
-#include "./endpoint.h"
-#include "./severconfig.h"
+#include "./webservice.h"
 #endif

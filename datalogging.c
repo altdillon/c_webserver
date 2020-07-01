@@ -59,7 +59,44 @@ void makeHeaderString(char *logheadr)
   time_t now;
   time(&now);
   struct tm *local = localtime(&now);
+  // finish making a header string
+  //strcpy(logheadr,"THIS IS A PLACE HOLDER HEADER!! \n");
+  //   
+  hours = local -> tm_hour;
+  minutes = local -> tm_min;
+  seconds = (*local).tm_sec;
+  //
+  day = local->tm_mday;
+  month = local->tm_mon + 1;
+  year = local -> tm_year + 1900;
+  sprintf(logheadr,"tiny webserver version: %.02f \n start time: %d:%d:%d  on %d,%d,%d \n",VERSION,hours,minutes,seconds,month,day,year);
   
+}
+
+int initFile(const char *path)
+{
+  int fd;
+  //fd = open(path,O_WRONLY|O_CREAT|O_TRUNC,S_IRUSR|S_IWUSR);
+  fd = open(path,O_WRONLY|O_CREAT|O_TRUNC, S_IRUSR|S_IWUSR);
+  if(fd == -1)
+  {
+    return -1; // failed to start the log file
+  }
+  else
+  {
+    char header[80];
+    makeHeaderString(header);
+    if(write(fd,header,strlen(header)) > 0)
+    {
+      close(fd);
+    }
+    else
+    {
+      return -1;
+    }
+  }
+
+  return 0;
 }
 
 #endif
