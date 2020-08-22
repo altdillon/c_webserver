@@ -1,6 +1,6 @@
 #ifndef WEBPAGE_H
 #define WEBPAGE_H
-#define BUFFERSIZE 1000000
+//#define BUFFERSIZE 1000000 // moved to server config
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>

@@ -17,16 +17,17 @@ void demoOnClick(const char *rec,char *res,char **args,int len);
 void onMessage(const char *msg,char *res,char **args,int len);
 void add(const char *msg,char *res,char **args,int len);
 void ledstate(const char *rec,char *res,char **args,int len);
+void posttest(const char *rec,char *res,char **args,int len);
 
 bool ledvalue;
 
 int main()
 {
     ledvalue = false;
-    addEndPoint(&demoOnClick,"/onClick");
-    addEndPoint(&onMessage,"/message");
-    addEndPoint(&add,"/add");
-    addEndPoint(&ledstate,"/ledstate");
+    addEndPoint(&demoOnClick,"/onClick",GET);
+    addEndPoint(&onMessage,"/message",GET);
+    addEndPoint(&add,"/add",GET);
+    addEndPoint(&ledstate,"/ledstate",GET);
 
     running = true;
     signal(SIGINT, handle_sigint); 
@@ -36,10 +37,15 @@ int main()
     #ifdef MULTIPROC
     printf("MULTIPROCESS ENABLED IN THIS BUILD \n");
     #endif
-    //runServerLoop(); // start up a server loop
-    runDeamonServerLoop();    
+    runServerLoop(); // start up a server loop
+    //runDeamonServerLoop();    
 
     return 0;
+}
+
+void posttest(const char *rec,char *res,char **args,int len)
+{
+  
 }
 
 void ledstate(const char *rec,char *res,char **args,int len)

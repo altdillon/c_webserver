@@ -1,6 +1,6 @@
 #ifndef SERVERCONFIG_H
 #define SERVERCONFIG_H
-#define VERSION 1.1
+#define VERSION 1.14
 #define PORT 8080
 #ifndef WEBROOT
 #define WEBROOT "./webroot"
@@ -19,8 +19,9 @@
 #define DEBUG
 // enable multiprocess
 //#define MULTIPROC
-// define a path for the log file
+// define a path for the log file as well as the buffer size for sending files (size defined in bytes)
 #define LOGPATH "/tmp/webserver.log" 
-#define SAVELOGFILE
+#define BUFFERSIZE 1000000
+//#define SAVELOGFILE
 
 #endif

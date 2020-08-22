@@ -1,7 +1,7 @@
 #include "endpoint.h"
 
 
-int addEndPoint(void (*endpoint)(const char *,char *,char **,int),const char *path)
+addEndPoint(void (*endpoint)(const char *,char *,char **,int),const char *path,HTTPCODE_t httptype)
 {
   int res = -1;
   
@@ -9,6 +9,7 @@ int addEndPoint(void (*endpoint)(const char *,char *,char **,int),const char *pa
   {
     endpointList[countEndPoints].path = path;
     endpointList[countEndPoints].endpoint = endpoint;
+    endpointList[countEndPoints].codetype = httptype;
     res = 0;
     countEndPoints++;
   }

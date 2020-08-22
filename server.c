@@ -1,5 +1,6 @@
 #include "server.h"
 #include "debug.h"
+#include "httpcodes.h"
 
 /* This function accepts a socket FD and a ptr to the null terminated
  * string to send.  The function will make sure all the bytes of the
@@ -58,6 +59,7 @@ int recv_line(int sockfd, unsigned char *dest_buffer)
 
 void runDeamonServerLoop()
 {
+  printf("%s\n","starting webserver as a background process"); // you know, just let the user know...
   //running = true; // running
   serverRunning = 1;
   int sockfd, new_sockfd, yes=1;
@@ -247,9 +249,8 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr)
     *ptr = 0;
     ptr = NULL;
 
-    //printf("\n [DEBUG] *** byte dump *** \n");
-    //dumpbytes(request,strlen(request));
-    //printf("\n *** end byte dump *** \n");
+    // NOTE:  each of these if statements handle a diffrent type of HTTP command
+    // I'm thinking about redoing it, but I don't really have a good way of how I'd do that right now.
 
     // get reqest
     if(strncmp(request, "GET ", 4) == 0)
@@ -266,24 +267,20 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr)
       //send_string(sockfd, "Server: Tiny webserver\r\n\r\n");
       char path[200];
 
-      if(strcmp(ptr,"/") == 0)
+      if(strcmp(ptr,"/") == 0) // check if the client is trying to get the index.html file
       {
         //printf("[STATUS] index.html reqested\n");
         logmsg("[STATUS] index.html reqested\n");
-        //send200(sockfd);
-        //if(sendFile(sockfd,"./webroot/index.html") < 0)
-        //{
-        //  printf("[ERROR] failed to send index.html \n");     
-        //}
         strcpy(path,"./webroot/index.html");
       }
-      else
+      else // if the path is something besides the index, then figure out what the path is, then end the path
       {  
         // non index paths    
         strcpy(path,WEBROOT);
         strcat(path,ptr);
       }
       
+      // if there's not path found, then see if the call is for a file or an endpoint
       // see if the file exists 
       if(hasFile(path))
       {
@@ -302,7 +299,7 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr)
           }
         }
       }
-      else if(hasEndPoint(ptr)) // see if the requested path is a rest endpoint, ptr has the actual body of request with out the webroot dir
+      else if(hasEndPoint(ptr)) // see if the requested path is a endpoint, ptr has the actual body of request with out the webroot dir
       {
         char responce[MAXRESSIZE];
         sprintf(messages,"[STATUS] endpoint \" %s \" requested \n",ptr);
@@ -310,20 +307,25 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr)
         send200(sockfd);
         send(sockfd,responce,strlen(responce),0); // this is more of an exspriment
       }
-      else // file not found, send 404
+      else // file not found, send 404.  So thing found.  
       {
+        // just makeup a 404 page for now
         logmsg("[STATUS] file not found, sending 404 error \n");
         send404(sockfd);
         char *errorPage = "<title> 404 not found </title> <h1> 404 Page not found! </h1>"; // litterly all the html for the 404 page
         send(sockfd, errorPage,strlen(errorPage), 0);       
       }
     }
+
+
     // post reqest
     if(strncmp(request,"POST ",5) == 0)
     {
       ptr = request + 5;
       logmsg("[STATUS] received HTTP POST request \n");
     }
+
+
     // head reqest
     if(strncmp(request,"HEAD ",5) == 0)
     {

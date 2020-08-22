@@ -4,8 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#define POST 1
-#define GET 2
+#include "httpcodes.h"
 #define LISTSIZE 20
 #define MAXARGS 40 
 #define MAXRESSIZE 120
@@ -16,13 +15,14 @@ size_t countEndPoints; // count of allocated endpoints
 
 typedef struct 
 {
+  HTTPCODE_t codetype;
   char *path;
   void (*endpoint)(const char *,char *,char **,int);  
 }endpoint_t;
 
 endpoint_t endpointList[LISTSIZE];
 
-int addEndPoint(void (*fun_ptr)(const char *,char *,char **,int),const char *path);
+int addEndPoint(void (*fun_ptr)(const char *,char *,char **,int),const char *path,HTTPCODE_t httptype);
 int runEndPoint(char *request,char *responce); // run and endpoit
 int getArgs(char *argstr,char **args);
 int countArgs(char *args); // returns the number of args

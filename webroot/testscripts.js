@@ -27,6 +27,22 @@
     xmlReq.send();
   }
 
+  function sendPost(data){
+    var xmlReq = new XMLHttpRequest();
+    xmlReq.open("POST","/postest",true);
+    xmlReq.onreadystatechange = function(){
+      if(this.readyState == 4 && this.status == 200){
+        var retData = xmlReq.responseText;
+        //debugger;
+      }
+    }
+    if(data){
+    xmlReq.send(data);
+    } else {
+      xmlReq.send();
+    }
+  }
+
   function getSwitch(){
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
@@ -59,6 +75,7 @@
 
     var button1 = document.getElementById("button1");
     var button2 = document.getElementById("button2");
+    var postbutton = document.getElementById("postbutton");
     // attach button events
     button1.onclick = function() {
       ledOn();
@@ -68,7 +85,11 @@
       ledOff();
     }
 
-    window.setInterval(getSwitch,100)
+    postbutton.onclick = function() {
+      sendPost("data=thisisdata");
+    }
+
+    //window.setInterval(getSwitch,100) // lol don't run unless you mean it!
 
   }
 
