@@ -17,7 +17,7 @@ addEndPoint(void (*endpoint)(const char *,char *,char **,int),const char *path,H
   return res;
 }
 
-bool hasEndPoint(char *path)
+bool hasEndPoint(char *path,HTTPCODE_t httpcode)
 {
   // get the name of the endpoint out of the path
   size_t epAlloc = 80;
@@ -50,7 +50,7 @@ bool hasEndPoint(char *path)
     }
   }
 */
-  if(findEndPoint(endpoint_str) >= 0)
+  if(findEndPoint(endpoint_str,httpcode) >= 0)
   {
     hasPoint = true;
   }
@@ -88,7 +88,7 @@ int getArgs(char *argstr,char **args)
   return argc;
 }
 
-int runEndPoint(char *request,char *responce)
+int runEndPoint(char *request,char *responce,HTTPCODE_t httpcode)
 {
   int s = 0; // value for sucess
   // define the name of the endpoint
@@ -127,7 +127,7 @@ int runEndPoint(char *request,char *responce)
 
   // just assume that the path exists, but check the names to be safe
   // this whole thing is gonzo 
-  int endPointIndex = findEndPoint(endpoint_str);
+  int endPointIndex = findEndPoint(endpoint_str,httpcode);
   if(endPointIndex >= 0) // just to be safe, rember that zero is also a valid answer
   {
     (*endpointList[endPointIndex].endpoint)(request,responceBuffer,argList,argCount); 
@@ -145,14 +145,14 @@ int runEndPoint(char *request,char *responce)
   return s; 
 }
 
-int findEndPoint(char *endpoint)
+int findEndPoint(char *endpoint,HTTPCODE_t httpcode)
 {
   int epIndex = -1;
 
   size_t i;
   for(i=0;i<countEndPoints;i++)
   {
-    if(strcmp(endpointList[i].path,endpoint) == 0)
+    if(strcmp(endpointList[i].path,endpoint) == 0 && endpointList[i].codetype == httpcode)
     {
       epIndex = i;
       break;

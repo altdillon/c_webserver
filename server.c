@@ -296,14 +296,15 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr)
           if(fileTooLarge(path))
           {
             logmsg("[ERROR] file is too large\n");
+            // send http code for file being too large...
           }
         }
       }
-      else if(hasEndPoint(ptr)) // see if the requested path is a endpoint, ptr has the actual body of request with out the webroot dir
+      else if(hasEndPoint(ptr,GET)) // see if the requested path is a endpoint, ptr has the actual body of request with out the webroot dir
       {
         char responce[MAXRESSIZE];
         sprintf(messages,"[STATUS] endpoint \" %s \" requested \n",ptr);
-        runEndPoint(ptr,responce);
+        runEndPoint(ptr,responce,GET);
         send200(sockfd);
         send(sockfd,responce,strlen(responce),0); // this is more of an exspriment
       }
@@ -322,7 +323,27 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr)
     if(strncmp(request,"POST ",5) == 0)
     {
       ptr = request + 5;
-      logmsg("[STATUS] received HTTP POST request \n");
+      size_t reqsize = strlen(request);
+      sprintf(messages,"[STATUS] received HTTP POST request with size %ld bytes \n",reqsize);
+      logmsg(messages);
+      sprintf(messages,"[STATUS] POST request body: %s \n",ptr);
+      logmsg(messages);
+      // see if the request of in the list of owned get requests 
+      if(hasEndPoint(ptr,POST))
+      {
+        char responce[MAXRESSIZE];
+        sprintf(messages,"[STATUS] received request %s ",ptr);
+        logmsg(messages);
+        // run the end point, then send a 200.  Afterwords send the send the responce from the callback
+        // just like in the get request :)
+        runEndPoint(ptr,responce,POST);
+        send200(sockfd);
+        send(sockfd,responce,strlen(responce),0);
+      }
+      else
+      {
+        send404(sockfd);
+      }
     }
 
 

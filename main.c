@@ -28,7 +28,8 @@ int main()
     addEndPoint(&onMessage,"/message",GET);
     addEndPoint(&add,"/add",GET);
     addEndPoint(&ledstate,"/ledstate",GET);
-
+    addEndPoint(&posttest,"/posttest",POST);
+  
     running = true;
     signal(SIGINT, handle_sigint); 
     // print out some opening information
@@ -45,7 +46,7 @@ int main()
 
 void posttest(const char *rec,char *res,char **args,int len)
 {
-  
+  printf("post test called \n");
 }
 
 void ledstate(const char *rec,char *res,char **args,int len)

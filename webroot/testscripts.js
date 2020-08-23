@@ -29,7 +29,7 @@
 
   function sendPost(data){
     var xmlReq = new XMLHttpRequest();
-    xmlReq.open("POST","/postest",true);
+    xmlReq.open("POST","/posttest?data=hello",true);
     xmlReq.onreadystatechange = function(){
       if(this.readyState == 4 && this.status == 200){
         var retData = xmlReq.responseText;
@@ -86,7 +86,7 @@
     }
 
     postbutton.onclick = function() {
-      sendPost("data=thisisdata");
+      sendPost();
     }
 
     //window.setInterval(getSwitch,100) // lol don't run unless you mean it!
