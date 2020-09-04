@@ -6,6 +6,8 @@
 #include <stdbool.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include <sys/types.h> // added for to make this compile with mac os
+#include <sys/stat.h>  // ditto
 #include <dirent.h>
 #include "severconfig.h"
 
