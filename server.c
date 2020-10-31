@@ -190,6 +190,7 @@ void runServerLoop()
   while(serverRunning)
   {
     sin_size = sizeof(struct sockaddr_in);
+    logmsg("[STATUS] now waiting for connections...\n");
     new_sockfd = accept(sockfd, (struct sockaddr *)&client_addr, &sin_size);
     
     if(new_sockfd == -1)
@@ -200,7 +201,7 @@ void runServerLoop()
     else // handle new socket
     {
       //printf("[STATUS] new connection received\n");
-      logmsg("[ERROR] failed to accpet incoming socket\n");
+      logmsg("[STATUS] new connection received\n");
       // if enabled then spin off a new process to handle 
       #ifdef MULTIPROC
       //printf("[STATUS] starting a new process to handle connection from parrent process: %d \n",getpid());

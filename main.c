@@ -38,15 +38,19 @@ int main()
     #ifdef MULTIPROC
     printf("MULTIPROCESS ENABLED IN THIS BUILD \n");
     #endif
-    runServerLoop(); // start up a server loop
-    //runDeamonServerLoop();    
+    //runServerLoop(); // start up a server loop
+    runDeamonServerLoop();    
 
     return 0;
 }
 
 void posttest(const char *rec,char *res,char **args,int len)
 {
-  printf("post test called \n");
+  printf("\n\t post test called \n");
+  for(size_t i = 0;i<len;i++)
+  {
+    
+  }
 }
 
 void ledstate(const char *rec,char *res,char **args,int len)

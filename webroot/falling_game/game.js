@@ -170,6 +170,8 @@
 //////////////////////////////////////////////////////////////////////////
     // object for handling the loading of files
     var Loader = function() {
+        this.itemsLoaded = 0; // items that have been completly loaded from memory
+        this.itemsToLoad = 0; // items that have yet to be loaded
         this.imgCache = [];
         this.loading = [];
         //this.readyCallBacks = []; // may not needed
@@ -211,8 +213,10 @@
       if(this.imgCache[fileName]){ // if the file is loaded then just return it 
         return this.imgCache[fileName];
       } else { // if it is not loaded then load it 
+        this.itemsToLoad = this.itemsToLoad + 1; // items to load
         var imgsp = new Image();
         imgsp.onload = function(){
+          this.itemsLoaded = this.itemsLoaded + 1; // loaded items
           loaderThis.imgCache[fileName] = imgsp; // image is now loaded, save it to the image cache
           // check to see if all the images have been loaded.
           // if yes then call the all loaded callback
@@ -224,6 +228,11 @@
         this.imgCache[fileName] = false;
         imgsp.src = fileName;
       }
+    }
+
+    // return the progress of loadeing, from 0.0 to 1.0
+    Loader.prototype.getProgress = function(){
+      return this.loadedItems / this.itemsToLoad;
     }
 
     // factory function in loader for making sprites.  
@@ -311,6 +320,8 @@
     
       return sprites;
     }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////
     // object for handling sprite sheets

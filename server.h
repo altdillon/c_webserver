@@ -86,6 +86,7 @@ volatile sig_atomic_t serverRunning; // flag to tell the server if it's running 
 // small functions for sending approate HTTP responce
 void send404(int sockfd); // 404 page not found
 void send200(int sockfd); // 200 page found
+void send401(int sockfd); // 401 forbidden, not added yet
 // right now not implmented, but might be added in the future
 void send408(int sockfd); // 408 client timeout, the client waited to long after connecting to send an actual reqest
 void send500(int sockfd); // 500 server internal error

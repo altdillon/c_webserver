@@ -22,6 +22,6 @@
 // define a path for the log file as well as the buffer size for sending files (size defined in bytes)
 #define LOGPATH "/tmp/webserver.log" 
 #define BUFFERSIZE 1000000
-//#define SAVELOGFILE
+#define SAVELOGFILE
 
 #endif
