@@ -1,9 +1,10 @@
 #ifndef SERVERCONFIG_H
 #define SERVERCONFIG_H
-#define VERSION 1.14
+#define VERSION 1.21
 #define PORT 8080
 #ifndef WEBROOT
 #define WEBROOT "./webroot"
+#define INDEX "index.html"
 #endif
 #define DEFULT_MAIN
 

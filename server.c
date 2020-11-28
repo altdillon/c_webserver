@@ -67,14 +67,6 @@ void runDeamonServerLoop()
   socklen_t sin_size;
   char messages[80]; // string for messages  
 
-  #ifdef SAVELOGFILE
-  // make sure to init the log file
-  if(initFile(LOGPATH) == -1)
-  {
-    printf("%s\n","failed to start log file"); // no point to starting log file until
-  }
-  #endif
-
   // start the webserver as a deamon
   pid_t pid,sid;
   // start a new process and make sure it works
@@ -83,6 +75,10 @@ void runDeamonServerLoop()
   {
     logmsg("[ERROR] failed to start deamon process\n");
     exit(1);
+  }
+  else
+  {
+    printf("deamon process started with PID: %d \n",pid);
   }
 
   // kill the parrent process and disconnect from the terminal
@@ -142,6 +138,15 @@ void runServerLoop()
   //printf("[STATUS] starting socket on port: %d \n",PORT);
   sprintf(messages,"[STATUS] starting socket on port: %d \n",PORT);
   logmsg(messages);
+
+  // init the log file
+  #ifdef SAVELOGFILE
+  // make sure to init the log file
+  if(initFile(LOGPATH) == -1)
+  {
+    printf("%s\n","failed to start log file"); // no point in using the error system
+  }
+  #endif
 
   // attempt to setup a new socket and see if it failed
   sockfd = socket(PF_INET,SOCK_STREAM,0);
@@ -272,7 +277,10 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr)
       {
         //printf("[STATUS] index.html reqested\n");
         logmsg("[STATUS] index.html reqested\n");
-        strcpy(path,"./webroot/index.html");
+        //strcpy(path,"./webroot/index.html");
+        strcpy(path,WEBROOT);
+        strcat(path,"/");
+        strcat(path,INDEX);
       }
       else // if the path is something besides the index, then figure out what the path is, then end the path
       {  

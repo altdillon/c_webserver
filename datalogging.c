@@ -85,8 +85,8 @@ int initFile(const char *path)
   else
   {
     char header[80];
-    makeHeaderString(header);
-    if(write(fd,header,strlen(header)) > 0)
+    makeHeaderString(header); // generate header data 
+    if(write(fd,header,strlen(header)) > 0) // write that to the server
     {
       close(fd);
     }
