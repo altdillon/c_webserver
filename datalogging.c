@@ -69,7 +69,7 @@ void makeHeaderString(char *logheadr)
   day = local->tm_mday;
   month = local->tm_mon + 1;
   year = local -> tm_year + 1900;
-  sprintf(logheadr,"tiny webserver version: %.02f \n start time: %d:%d:%d  on %d,%d,%d \n",VERSION,hours,minutes,seconds,month,day,year);
+  sprintf(logheadr,"tiny webserver version: %.02f \n start time: %d:%d:%d  on %d/%d/%d \n",VERSION,hours,minutes,seconds,month,day,year);
   
 }
 

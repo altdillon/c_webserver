@@ -134,12 +134,7 @@ void runServerLoop()
   socklen_t sin_size;
   char messages[80]; // string for messages  
 
-  // do some stuff to init the web server
-  //printf("[STATUS] starting socket on port: %d \n",PORT);
-  sprintf(messages,"[STATUS] starting socket on port: %d \n",PORT);
-  logmsg(messages);
-
-  // init the log file
+    // init the log file
   #ifdef SAVELOGFILE
   // make sure to init the log file
   if(initFile(LOGPATH) == -1)
@@ -147,6 +142,11 @@ void runServerLoop()
     printf("%s\n","failed to start log file"); // no point in using the error system
   }
   #endif
+
+  // do some stuff to init the web server
+  //printf("[STATUS] starting socket on port: %d \n",PORT);
+  sprintf(messages,"[STATUS] starting socket on port: %d \n",PORT);
+  logmsg(messages);
 
   // attempt to setup a new socket and see if it failed
   sockfd = socket(PF_INET,SOCK_STREAM,0);
