@@ -29,7 +29,7 @@
 
   function sendPost(data){
     var xmlReq = new XMLHttpRequest();
-    xmlReq.open("POST","/posttest?data=hello",true);
+    xmlReq.open("POST","/posttest?data=hello&logs=32",true);
     xmlReq.onreadystatechange = function(){
       if(this.readyState == 4 && this.status == 200){
         var retData = xmlReq.responseText;

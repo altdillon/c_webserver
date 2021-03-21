@@ -1,6 +1,9 @@
 #include "server.h"
 #include "debug.h"
 #include "httpcodes.h"
+#include "severconfig.h"
+#include "endpoint.h"
+#include "datalogging.h"
 
 /* This function accepts a socket FD and a ptr to the null terminated
  * string to send.  The function will make sure all the bytes of the

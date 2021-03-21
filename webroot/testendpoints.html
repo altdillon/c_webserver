@@ -1,6 +1,8 @@
 <head>
   <title> test verious html requests </title>
   <script src = "./testscripts.js"></script>
+  <script src = "./relaycontrol.js"></script> <!-- functions for controlling the relay -->
+ 
 </head>
 </body>
   <p>this tests some simple requests that can be made to the server backend</p>
@@ -11,5 +13,12 @@
   <!--<input type="text" id="lname" name="lname">-->
   <canvas id="canvas"></canvas>
   <br>
-  <a href = "127.0.0.1:8080">index page</a><br>
+  
+  <span id="relaytestForm">
+    <button id="rButtonOn">relay on</button></br>
+    <button id="rButtonOff">relay off</button>
+  </span>
+
+  
+
 </body>

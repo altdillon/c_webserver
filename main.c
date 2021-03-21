@@ -8,6 +8,7 @@
 #include "webpage.h"
 #include "endpoint.h"
 #include "severconfig.h"
+#include "relay.h" // headedr for the relays
 #ifdef DEFULT_MAIN
 //#include "debug.h"
 
@@ -23,6 +24,7 @@ bool ledvalue;
 
 int main()
 {
+    hai();
     ledvalue = false;
     addEndPoint(&demoOnClick,"/onClick",GET);
     addEndPoint(&onMessage,"/message",GET);
@@ -30,6 +32,11 @@ int main()
     addEndPoint(&ledstate,"/ledstate",GET);
     addEndPoint(&posttest,"/posttest",POST);
   
+    // endpoints for the relay control
+    relayInit();
+    addEndPoint(&updateRelay,"/updateRelay",POST);
+    addEndPoint(&getOnTime,"/getRelayStateTime",GET);
+
     running = true;
     signal(SIGINT, handle_sigint); 
     // print out some opening information
@@ -49,7 +56,7 @@ void posttest(const char *rec,char *res,char **args,int len)
   printf("\n\t post test called \n");
   for(size_t i = 0;i<len;i++)
   {
-    
+    printf("%s\n",args[i]);
   }
 }
 
