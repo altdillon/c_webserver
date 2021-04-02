@@ -4,6 +4,8 @@
 #include "severconfig.h"
 #include "endpoint.h"
 #include "datalogging.h"
+#include "folderlist.h"
+
 
 /* This function accepts a socket FD and a ptr to the null terminated
  * string to send.  The function will make sure all the bytes of the
@@ -285,6 +287,24 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr)
         strcat(path,"/");
         strcat(path,INDEX);
       }
+      else if(isFolder(ptr)) // detrmine if the ptr is a folder
+      {
+        // real quick... make sure that we don't also have already have an existing folder.  If so than send a 500
+        if(hasEndPoint(ptr,GET) || hasEndPoint(ptr,POST)) 
+        {
+          // if this is a folder and an endpoint than send a 500 error
+          sprintf(messages,"[ERROR] requested destionation is a folder as well as an endpoint\n"); // remeber the log file...
+          logmsg(messages);
+          // send a responce back to the client 
+          send500(sockfd);
+          char *error505 = "<title>505 error</title> <h1> 500 internal error </h1>";
+          send(sockfd,error505,strlen(error505),0);
+        }
+        else // otherwise we can send the folder deets
+        {
+
+        }
+      }
       else // if the path is something besides the index, then figure out what the path is, then end the path
       {  
         // non index paths    
@@ -386,6 +406,11 @@ void send200(int sockfd)
   send_string(sockfd, "Server: crappy webserver\r\n\r\n");
 }
 
+void send500(int sockfd)
+{
+  send_string(sockfd, "HTTP/1.0 500 OK\r\n");
+  send_string(sockfd, "Server: crappy webserver\r\n\r\n");
+}
 
 int cutStr(char *str)
 {

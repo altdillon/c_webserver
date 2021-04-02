@@ -38,7 +38,7 @@ int main()
     addEndPoint(&getOnTime,"/getRelayStateTime",GET);
 
     running = true;
-    signal(SIGINT, handle_sigint); 
+    //signal(SIGINT, handle_sigint); 
     // print out some opening information
     printf("crappy mini web server, version %.2f \n",VERSION);   
     printf("starting on port: %d with webroot: \"%s\" \n",PORT,WEBROOT);
