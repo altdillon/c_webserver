@@ -1,6 +1,6 @@
 #ifndef SERVERCONFIG_H
 #define SERVERCONFIG_H
-#define VERSION 1.21
+#define VERSION 1.26
 #define PORT 8080
 #ifndef WEBROOT
 #define WEBROOT "./webroot"
@@ -23,6 +23,8 @@
 // define a path for the log file as well as the buffer size for sending files (size defined in bytes)
 #define LOGPATH "/tmp/webserver.log" 
 #define BUFFERSIZE 1000000
-#define SAVELOGFILE
+#define MAXDIRNAMESIZE 90 
+#define FOLDERLISTPAGEBUFF 1000
+//#define SAVELOGFILE
 
 #endif

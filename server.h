@@ -78,6 +78,7 @@ void handle_sigint(int sig);      // ^C that bitch
 void stopServer();
 void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr);
 int cutStr(char *str);            // remove spaces from text
+void handleFolders(char *path,int sockfd);
 
 // global config stuff
 bool running;

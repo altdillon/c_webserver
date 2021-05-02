@@ -192,7 +192,7 @@ void runServerLoop()
   else
   {
     //printf("[STATUS] now waiting for connections...\n");
-    logmsg("[STATUS] now waiting for connections...\n");
+    logmsg("[INFO] getting ready to the start the server...\n");
   }
   
   // main loop of the server
@@ -212,6 +212,11 @@ void runServerLoop()
     {
       //printf("[STATUS] new connection received\n");
       logmsg("[STATUS] new connection received\n");
+      // log all the details on the client address to the log file 
+      logmsg("[INFO] logging connection details\n");
+      sprintf(messages,"[INFO] incoming connection from client: %s on port: %d \n",inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
+      logmsg(messages);
+
       // if enabled then spin off a new process to handle 
       #ifdef MULTIPROC
       //printf("[STATUS] starting a new process to handle connection from parrent process: %d \n",getpid());
@@ -243,6 +248,7 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr)
   unsigned char *ptr,request[500],resource[500],messages[80];
   int fd,length;
 
+  logmsg("\t it looks like we're getting hung up around line ~151\n");
   length = recv_line(sockfd,request);
   //printf("[STATUS] Got request from %s:%d \"%s\" \n", inet_ntoa(client_addr_ptr->sin_addr), ntohs(client_addr_ptr->sin_port), request);
   sprintf(messages,"[STATUS] Got request from %s:%d \"%s\" \n", inet_ntoa(client_addr_ptr->sin_addr), ntohs(client_addr_ptr->sin_port), request);
@@ -282,10 +288,46 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr)
       {
         //printf("[STATUS] index.html reqested\n");
         logmsg("[STATUS] index.html reqested\n");
-        //strcpy(path,"./webroot/index.html");
+        strcpy(path,"./webroot/index.html");
+        //strcpy(path,WEBROOT);
+        //strcat(path,"/");
+        //strcat(path,INDEX);
+      }
+      else // if the path is something besides the index, then figure out what the path is, then end the path
+      {  
+        // non index paths    
         strcpy(path,WEBROOT);
-        strcat(path,"/");
-        strcat(path,INDEX);
+        strcat(path,ptr);
+      }
+      
+      // if there's not path found, then see if the call is for a file or an endpoint
+      // see if the file exists 
+      if(hasFile(path) && !isFolder(path))
+      {
+        // if exisits then send the file over
+        send200(sockfd);
+        sprintf(messages,"[INFO] sending file: \"%s\" \n",path);
+        logmsg(messages); 
+        if(sendFile(sockfd,path) < 0)
+        {
+          sprintf(messages,"[ERROR] failed to send resource: \"%s\" to client \n",path);
+          logmsg(messages);
+          // try to generate some more information for error tracking
+          if(fileTooLarge(path))
+          {
+            logmsg("[ERROR] file is too large\n");
+            // send http code for file being too large... BOOKMARK
+            // TODO send needed http error code if the file is too large 
+          }
+        }
+      }
+      else if(hasEndPoint(ptr,GET) && !isFolder(ptr)) // see if the requested path is a endpoint, ptr has the actual body of request with out the webroot dir
+      {
+        char responce[MAXRESSIZE];
+        sprintf(messages,"[STATUS] endpoint \" %s \" requested \n",ptr);
+        runEndPoint(ptr,responce,GET);
+        send200(sockfd);
+        send(sockfd,responce,strlen(responce),0); // this is more of an exspriment
       }
       else if(isFolder(ptr)) // detrmine if the ptr is a folder
       {
@@ -302,43 +344,11 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr)
         }
         else // otherwise we can send the folder deets
         {
-
+          
+          send200(sockfd); // let the client know that they send a correct an input
+          // call the folder handling function
+          handleFolders(path,sockfd);
         }
-      }
-      else // if the path is something besides the index, then figure out what the path is, then end the path
-      {  
-        // non index paths    
-        strcpy(path,WEBROOT);
-        strcat(path,ptr);
-      }
-      
-      // if there's not path found, then see if the call is for a file or an endpoint
-      // see if the file exists 
-      if(hasFile(path))
-      {
-        // if exisits then send the file over
-        send200(sockfd);
-        sprintf(messages,"[INFO] sending file: \"%s\" \n",path);
-        logmsg(messages); 
-        if(sendFile(sockfd,path) < 0)
-        {
-          sprintf(messages,"[ERROR] failed to send resource: \"%s\" to client \n",path);
-          logmsg(messages);
-          // try to generate some more information for error tracking
-          if(fileTooLarge(path))
-          {
-            logmsg("[ERROR] file is too large\n");
-            // send http code for file being too large...
-          }
-        }
-      }
-      else if(hasEndPoint(ptr,GET)) // see if the requested path is a endpoint, ptr has the actual body of request with out the webroot dir
-      {
-        char responce[MAXRESSIZE];
-        sprintf(messages,"[STATUS] endpoint \" %s \" requested \n",ptr);
-        runEndPoint(ptr,responce,GET);
-        send200(sockfd);
-        send(sockfd,responce,strlen(responce),0); // this is more of an exspriment
       }
       else // file not found, send 404.  So thing found.  
       {
@@ -392,6 +402,53 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr)
     logmsg("[INFO] closing client socket \n");
     shutdown(sockfd, SHUT_RDWR); 
   }
+}
+
+void handleFolders(char *path,int sockfd)
+{
+  // get the path
+  char folderPath[80];
+  char lineBuffer[160];
+  // we're just gonna assume that the correct webroot is already in the parth
+  //strcpy(folderPath,WEBROOT);
+  //strcat(folderPath,path);
+  // figure out how many folders we'er dealing with
+  size_t folderCount = countFolders(path);
+  // allocate space for the html, using the stack and heap.  FML...
+  char *folderNames[folderCount];
+  for(size_t i=0;i<folderCount;i++)
+  {
+    folderNames[i] = (char*)malloc(MAXDIRNAMESIZE);
+  }
+  // now we get a list of folder names and save them to our dynamic array lol
+  listFolders(path,folderNames,folderCount);  
+  // build of the folder list page 
+  char *folderListPage = (char*)malloc(FOLDERLISTPAGEBUFF);
+  // header page and html header
+  sprintf(lineBuffer,"<head> <title> directory listing of %s </title> </head> <body> <h2> listing of folders for %s </h2><br>",path,path);
+  strcat(folderListPage,lineBuffer);
+  // iterate through all the folder names and add them to the listing page 
+  char filePath[160];
+  for(size_t i=0;i<folderCount;i++)
+  {
+    strcpy(filePath,path);
+    strcat(filePath,"/");
+    strcat(filePath,folderNames[i]);
+    sprintf(lineBuffer,"<a href=\"%s\">%s</a><br>",filePath,folderNames[i]);
+    strcat(folderListPage,lineBuffer);
+  }
+
+  strcat(folderListPage,"<button onclick=\"window.history.back()\">back</button><br>");
+  strcat(folderListPage,"</body>");
+  // send the page back up to the server
+  send(sockfd,folderListPage,strlen(folderListPage),0);
+  // ok now make sure to clean up so we don't leave a mess in the heap
+  free(folderListPage);
+  for(size_t i=0;i<folderCount;i++) // clean up the array names 
+  {
+    free(folderNames[i]);
+  }
+
 }
 
 void send404(int sockfd)

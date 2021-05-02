@@ -19,6 +19,7 @@ void onMessage(const char *msg,char *res,char **args,int len);
 void add(const char *msg,char *res,char **args,int len);
 void ledstate(const char *rec,char *res,char **args,int len);
 void posttest(const char *rec,char *res,char **args,int len);
+void makerr(const char *rec,char *res,char **args,int len);
 
 bool ledvalue;
 
@@ -31,7 +32,8 @@ int main()
     addEndPoint(&add,"/add",GET);
     addEndPoint(&ledstate,"/ledstate",GET);
     addEndPoint(&posttest,"/posttest",POST);
-  
+    addEndPoint(&makerr,"/makerr",GET);  
+
     // endpoints for the relay control
     relayInit();
     addEndPoint(&updateRelay,"/updateRelay",POST);
@@ -49,6 +51,11 @@ int main()
     //runDeamonServerLoop();    
 
     return 0;
+}
+
+void makerr(const char *rec,char *res,char **args,int len)
+{
+
 }
 
 void posttest(const char *rec,char *res,char **args,int len)
