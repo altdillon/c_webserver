@@ -15,7 +15,7 @@ set(HEADER_FILES
   ./httpcodes.h
   ./main.h
   ./networkutil.h
-  ./relay.h
+#  ./relay.h
   ./server.h
   ./severconfig.h
   ./webpage.h
@@ -28,9 +28,10 @@ set(SOURCE_FILES
   ./endpoint.c
   ./folderlist.c
   ./main.c
-  ./relay.c
+#  ./relay.c
   ./server.c
   ./webpage.c
+  ./networkutils.c
 )
 
 # make the exe

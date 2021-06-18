@@ -33,8 +33,8 @@ int send_string(int sockfd, unsigned char *buffer)
  */
 int recv_line(int sockfd, unsigned char *dest_buffer) 
 {
-#define EOL "\r\n" // End-Of-Line byte sequence
-#define EOL_SIZE 2
+    #define EOL "\r\n" // End-Of-Line byte sequence
+    #define EOL_SIZE 2
    unsigned char *ptr;
    int eol_matched = 0;
 
@@ -42,6 +42,7 @@ int recv_line(int sockfd, unsigned char *dest_buffer)
    while(recv(sockfd, ptr, 1, 0) == 1) { // read a single byte
       if(*ptr == EOL[eol_matched]) { // does this byte match terminator
          eol_matched++;
+         printf("debug: %02x\n",ptr);
          if(eol_matched == EOL_SIZE) { // if all bytes match terminator,
             *(ptr+1-EOL_SIZE) = '\0'; // terminate the string
             return strlen(dest_buffer); // return bytes recevied
@@ -248,11 +249,21 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr)
   unsigned char *ptr,request[500],resource[500],messages[80];
   int fd,length;
 
-  logmsg("\t it looks like we're getting hung up around line ~151\n");
-  length = recv_line(sockfd,request);
+  memset(request,'\0',500); // make sure that the request string is all nulled out
+  logmsg("\t [DEBUG] started the handle connection function\n");
+  length = recv_line(sockfd,request);  // for some reason we're getting hung up here
   //printf("[STATUS] Got request from %s:%d \"%s\" \n", inet_ntoa(client_addr_ptr->sin_addr), ntohs(client_addr_ptr->sin_port), request);
   sprintf(messages,"[STATUS] Got request from %s:%d \"%s\" \n", inet_ntoa(client_addr_ptr->sin_addr), ntohs(client_addr_ptr->sin_port), request);
   logmsg(messages);
+
+  // log the body of the request in debug
+  // this is just to make this work real quick
+  printf("%s\n","hex dump for http request body");
+  for(unsigned int i = 0;i<strlen(request);i++)
+  {
+    printf("0x%02x:%c ",request[i],request[i]);
+  }
+  printf("\n");
 
   ptr = strstr(request," HTTP/");
   if(ptr == NULL)
@@ -260,6 +271,7 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr)
     close(sockfd);
     //printf("[ERROR] Not valid HTTP\n");
     logmsg("[ERROR] Not valid HTTP\n");
+    
   }
   else // if there's a valid HTTP reqest
   {
@@ -402,6 +414,8 @@ void handle_connection(int sockfd, struct sockaddr_in *client_addr_ptr)
     logmsg("[INFO] closing client socket \n");
     shutdown(sockfd, SHUT_RDWR); 
   }
+  
+   logmsg("\t [DEBUG] ending the handle connection function\n");
 }
 
 void handleFolders(char *path,int sockfd)

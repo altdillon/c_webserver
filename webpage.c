@@ -76,6 +76,7 @@ bool fileTooLarge(char *filename)
   {
     isToLarge = true;
   }
-
+  close(fd); // remeber to close the file descriptor
+  
   return isToLarge;
 }
